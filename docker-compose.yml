@@ -8,6 +8,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     networks:
       - symfony-network
 
@@ -16,10 +18,11 @@ services:
     build:
       context: ./api
       dockerfile: Dockerfile
-    command: sh -c "composer install && php-fpm"
+    command: php-fpm
     volumes:
       - ./api:/var/www/api
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/app.ini:ro
+      - api-var:/var/www/api/var
     environment:
       DATABASE_URL: ${DATABASE_URL}
       MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN}
@@ -82,3 +85,4 @@ networks:
 
 volumes:
   db-data:
+  api-var:
