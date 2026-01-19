@@ -1,0 +1,34 @@
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
+
+# PHP/Symfony (api/)
+api/vendor/
+api/var/cache/
+api/var/log/
+api/var/sessions/
+api/.phpunit.result.cache
+
+# Node.js/Vue (front/)
+front/node_modules/
+front/dist/
+front/.vite/
+front/.yarn/
+front/.pnp.*
+
+# Docker
+docker/data/
+
+# Logs
+*.log
+
+# Database
+db-data/
