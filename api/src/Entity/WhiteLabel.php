@@ -64,4 +64,15 @@ class WhiteLabel
         $this->config = $config;
         return $this;
     }
+
+    public function getConfigString(): string
+    {
+        return json_encode($this->config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '{}';
+    }
+
+    public function setConfigString(string $config): self
+    {
+        $this->config = json_decode($config, true) ?: [];
+        return $this;
+    }
 }

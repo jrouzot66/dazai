@@ -1,0 +1,44 @@
+{# @Developer Rouzot Julien copyright 2026 Agence Webnet.fr #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Connexion Fluxion Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .login-card { width: 100%; max-width: 400px; padding: 2rem; border-radius: 1rem; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); background: white; }
+        .btn-primary { background-color: #3842d8; border: none; }
+    </style>
+</head>
+<body>
+<div class="login-card">
+    <h3 class="text-center mb-4">Fluxion <small class="text-muted">by Dazai</small></h3>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+    {% endif %}
+
+    <form action="{{ path('admin_login') }}" method="post">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" value="{{ last_username }}" name="_username" id="email" class="form-control" autocomplete="email" required autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Mot de passe</label>
+            <input type="password" name="_password" id="password" class="form-control" autocomplete="current-password" required>
+        </div>
+
+        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+        <button class="btn btn-primary w-100 py-2" type="submit">Se connecter</button>
+    </form>
+
+    <div class="text-center mt-4 text-muted small">
+        &copy; 2026 Agence Webnet.fr<br>
+        <span class="fw-bold">Developer Rouzot Julien</span>
+    </div>
+</div>
+</body>
+</html>
