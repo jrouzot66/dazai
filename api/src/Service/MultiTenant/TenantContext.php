@@ -7,7 +7,7 @@
 namespace App\Service\MultiTenant;
 
 use App\Entity\WhiteLabel;
-use App\Repository\WhiteLabelRepository;
+use App\Repository\WhiteLabelRepositoryInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class TenantContext implements TenantContextInterface
@@ -16,7 +16,7 @@ class TenantContext implements TenantContextInterface
 
     public function __construct(
         private readonly RequestStack $requestStack,
-        private readonly WhiteLabelRepository $whiteLabelRepository
+        private readonly WhiteLabelRepositoryInterface $whiteLabelRepository
     ) {}
 
     public function getCurrentTenant(): ?WhiteLabel
@@ -25,14 +25,29 @@ class TenantContext implements TenantContextInterface
             return $this->currentTenant;
         }
 
-        $request = $this->requestStack->getMainRequest();
-        if ($request === null) {
+        $request = $this->requestStack->getCurrentRequest();
+        if (!$request) {
             return null;
         }
 
+        if ($request->attributes->has(self::ATTRIBUTE_KEY)) {
+            $this->currentTenant = $request->attributes->get(self::ATTRIBUTE_KEY);
+            return $this->currentTenant;
+        }
+
         $host = $request->getHost();
-        $this->currentTenant = $this->whiteLabelRepository->findOneBy(['domainUrl' => $host]);
+        $this->currentTenant = $this->whiteLabelRepository->findOneByDomainUrl($host);
 
         return $this->currentTenant;
+    }
+
+    public function setCurrentTenant(WhiteLabel $whiteLabel): void
+    {
+        $this->currentTenant = $whiteLabel;
+
+        $request = $this->requestStack->getCurrentRequest();
+        if ($request) {
+            $request->attributes->set(self::ATTRIBUTE_KEY, $whiteLabel);
+        }
     }
 }
