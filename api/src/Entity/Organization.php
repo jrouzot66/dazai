@@ -67,4 +67,9 @@ class Organization
         $this->whiteLabel = $whiteLabel;
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return $this->name ?? 'Nouvelle Organisation';
+    }
 }
