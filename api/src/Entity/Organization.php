@@ -7,14 +7,18 @@
 
 namespace App\Entity;
 
+use App\Domain\MultiTenant\TenantAwareInterface;
+use App\Domain\MultiTenant\TenantAwareTrait;
 use App\Entity\Enum\OrganizationType;
 use App\Repository\OrganizationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: OrganizationRepository::class)]
 #[ORM\Table(name: 'organization')]
-class Organization
+class Organization implements TenantAwareInterface
 {
+    use TenantAwareTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -54,17 +58,6 @@ class Organization
     public function setType(OrganizationType $type): self
     {
         $this->type = $type;
-        return $this;
-    }
-
-    public function getWhiteLabel(): ?WhiteLabel
-    {
-        return $this->whiteLabel;
-    }
-
-    public function setWhiteLabel(?WhiteLabel $whiteLabel): self
-    {
-        $this->whiteLabel = $whiteLabel;
         return $this;
     }
 
