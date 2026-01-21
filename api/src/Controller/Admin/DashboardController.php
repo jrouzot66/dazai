@@ -5,6 +5,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Entity\AppUser;
 use App\Entity\WhiteLabel;
 use App\Entity\Organization;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
@@ -35,6 +36,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::section('Gestion Multi-tenant');
         yield MenuItem::linkToCrud('Marques Blanches', 'fa @tags', WhiteLabel::class);
         yield MenuItem::linkToCrud('Organisations', 'fa @building', Organization::class);
+        yield MenuItem::linkToCrud('Utilisateurs Clients', 'fa fa-users', AppUser::class);
 
         yield MenuItem::section('Sécurité');
         yield MenuItem::linkToLogout('Déconnexion', 'fa @sign-out');

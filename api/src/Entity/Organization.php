@@ -63,6 +63,8 @@ class Organization implements TenantAwareInterface
 
     public function __toString(): string
     {
-        return $this->name ?? 'Nouvelle Organisation';
+        $brandPrefix = $this->whiteLabel ? sprintf('[%s] ', $this->whiteLabel->getName()) : '';
+
+        return $brandPrefix . ($this->name ?? 'Nouvelle Organisation');
     }
 }
