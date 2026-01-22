@@ -26,19 +26,19 @@ class DashboardController extends AbstractDashboardController
     {
         return Dashboard::new()
             ->setTitle('Dazai - Administration Globale')
-            ->renderContentMaximized();
+            ->renderContentMaximized(true);
     }
 
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToDashboard('Tableau de bord', 'fa @home');
+        //yield MenuItem::linkToDashboard('Tableau de bord', 'fa fa-home');
 
         yield MenuItem::section('Gestion Multi-tenant');
-        yield MenuItem::linkToCrud('Marques Blanches', 'fa @tags', WhiteLabel::class);
-        yield MenuItem::linkToCrud('Organisations', 'fa @building', Organization::class);
+        yield MenuItem::linkToCrud('Marques Blanches', 'fa-solid fa-tags', WhiteLabel::class);
+        yield MenuItem::linkToCrud('Organisations', 'fa-solid fa-building', Organization::class);
         yield MenuItem::linkToCrud('Utilisateurs Clients', 'fa fa-users', AppUser::class);
 
         yield MenuItem::section('Sécurité');
-        yield MenuItem::linkToLogout('Déconnexion', 'fa @sign-out');
+        yield MenuItem::linkToLogout('Déconnexion', 'fa-solid fa-right-from-bracket');
     }
 }

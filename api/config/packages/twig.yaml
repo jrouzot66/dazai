@@ -1,5 +1,8 @@
 twig:
     file_name_pattern: '*.twig'
+    default_path: '%kernel.project_dir%/templates'
+    globals:
+        vite_dev_url: '%env(VITE_DEV_URL)%'
 
 when@test:
     twig:

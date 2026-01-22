@@ -1,0 +1,28 @@
+{# api/templates/tenant/app_boot.html.twig #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ tenant.name }} - Fluxion</title>
+    <script>
+        window.FLUXION_CONTEXT = {
+            tenantName: "{{ tenant.name }}",
+            config: {{ config|json_encode|raw }},
+            apiBaseUrl: "/api"
+        };
+    </script>
+
+    {% if app.debug %}
+        {% set vite_base = config.vite_url ?? vite_dev_url ?? 'http://localhost:5173' %}
+        <script type="module" src="{{ vite_base }}/@vite/client"></script>
+        <script type="module" src="{{ vite_base }}/src/main.js"></script>
+    {% else %}
+        {# En production : servir les fichiers buildés (ex : public/build) ou utiliser symfony/vite-bundle #}
+    <link rel="stylesheet" href="{{ asset('build/main.css') }}">
+        <script type="module" src="{{ asset('build/main.js') }}"></script>
+    {% endif %}
+</head>
+<body>
+    <div id="app"></div>
+</body>
+</html>

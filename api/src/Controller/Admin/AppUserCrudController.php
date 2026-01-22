@@ -29,7 +29,7 @@ class AppUserCrudController extends AbstractCrudController
             EmailField::new('email', 'Email utilisateur'),
 
             // Le mot de passe n'est affiché qu'à la création
-            TextField::new('password', 'Mot de passe')
+            TextField::new('plainPassword', 'Nouveau mot de passe')
                 ->setFormType(PasswordType::class)
                 ->onlyOnForms()
                 ->setRequired($pageName === 'new'),

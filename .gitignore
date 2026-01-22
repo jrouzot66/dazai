@@ -15,6 +15,7 @@ api/vendor/
 api/var/cache/
 api/var/log/
 api/var/sessions/
+api/config/jwt/
 api/.phpunit.result.cache
 
 # Node.js/Vue (front/)

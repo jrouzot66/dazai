@@ -8,6 +8,10 @@ security:
             entity:
                 class: App\Entity\StaffUser
                 property: email
+        app_users:
+            entity:
+                class: App\Entity\AppUser
+                property: email
 
     firewalls:
         dev:
@@ -29,6 +33,18 @@ security:
                 path: admin_logout
                 target: admin_login
 
+        tenant_portal:
+            pattern: ^/api
+            stateless: true # Indispensable pour JWT
+            provider: app_users
+            json_login:
+                check_path: /api/login
+                username_path: email
+                password_path: password
+                success_handler: lexik_jwt_authentication.handler.authentication_success
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
+
             # activate different ways to authenticate
             # https://symfony.com/doc/current/security.html#the-firewall
 
@@ -38,8 +54,10 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/admin/login, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_SUPER_ADMIN }
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/logged, roles: ROLE_USER }
+        - { path: ^/api, roles: ROLE_USER }
 
 when@test:
     security:

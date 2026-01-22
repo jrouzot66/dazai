@@ -29,6 +29,8 @@ class StaffUser implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
+    private ?string $plainPassword = null;
+
     public function getId(): ?int { return $this->id; }
     public function getEmail(): ?string { return $this->email; }
     public function setEmail(string $email): self { $this->email = $email; return $this; }
@@ -38,4 +40,13 @@ class StaffUser implements UserInterface, PasswordAuthenticatedUserInterface
     public function getPassword(): ?string { return $this->password; }
     public function setPassword(string $password): self { $this->password = $password; return $this; }
     public function eraseCredentials(): void {}
+    public function getPlainPassword(): ?string { return $this->plainPassword; }
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        // Important : on vide le password actuel pour forcer Doctrine à voir un changement
+        if ($plainPassword) { $this->password = null; }
+
+        return $this;
+    }
 }

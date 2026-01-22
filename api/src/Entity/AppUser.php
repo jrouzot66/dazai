@@ -42,6 +42,8 @@ class AppUser implements UserInterface, PasswordAuthenticatedUserInterface, Tena
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $azureId = null;
 
+    private ?string $plainPassword = null;
+
     public function getId(): ?int { return $this->id; }
     public function getEmail(): ?string { return $this->email; }
     public function setEmail(string $email): self { $this->email = $email; return $this; }
@@ -86,5 +88,16 @@ class AppUser implements UserInterface, PasswordAuthenticatedUserInterface, Tena
                     ->addViolation();
             }
         }
+    }
+
+    public function getPlainPassword(): ?string { return $this->plainPassword; }
+
+    public function setPlainPassword(?string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+        // Important : on vide le password actuel pour forcer Doctrine à voir un changement
+        if ($plainPassword) { $this->password = null; }
+
+        return $this;
     }
 }
