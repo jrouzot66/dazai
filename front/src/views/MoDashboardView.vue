@@ -6,6 +6,9 @@ import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { fetchMoDeliveries } from '@/api/deliveriesApi'
+import { fetchOrganizations } from '@/api/organization'
+import { createMoDelivery } from '@/api/deliveriesApi'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -29,15 +32,6 @@ const handleLogout = () => {
   router.push({ name: 'login' })
 }
 
-const loadOrganizations = async () => {
-  try {
-    const response = await axios.get('/api/organizations')
-    organizations.value = response.data
-  } catch (err) {
-    console.error('Erreur lors du chargement des organisations :', err)
-  }
-}
-
 const createDelivery = async () => {
   if (!formData.value.pickupAddress || !formData.value.dropoffAddress || !formData.value.vendorId || !formData.value.buyerId) {
     error.value = 'Tous les champs sont requis'
@@ -46,17 +40,14 @@ const createDelivery = async () => {
 
   submitting.value = true
   try {
-    const response = await axios.post('/api/mo/deliveries', {
+    const response = await createMoDelivery({
       pickupAddress: formData.value.pickupAddress,
       dropoffAddress: formData.value.dropoffAddress,
       vendorId: parseInt(formData.value.vendorId),
       buyerId: parseInt(formData.value.buyerId),
     })
 
-    // Ajoute la nouvelle livraison au tableau
-    deliveries.value.unshift(response.data)
-
-    // Réinitialise le formulaire
+    deliveries.value.unshift(response)
     formData.value = { pickupAddress: '', dropoffAddress: '', vendorId: '', buyerId: '' }
     showForm.value = false
     error.value = null
@@ -74,10 +65,8 @@ onMounted(async () => {
       await auth.fetchUser()
     }
 
-    const response = await axios.get('/api/mo/deliveries')
-    deliveries.value = response.data
-
-    await loadOrganizations()
+    deliveries.value = await fetchMoDeliveries()
+    organizations.value = await fetchOrganizations()
   } catch (err) {
     error.value = err.response?.data?.message || err.message
     console.error(err)
