@@ -93,7 +93,7 @@ class MoDeliveryController extends AbstractController
     public function applyTransition(
         Delivery $delivery,
         string $transition,
-        #[Autowire(service: 'workflow.delivery')] WorkflowInterface $deliveryWorkflow,
+        #[Autowire(service: 'state_machine.delivery')] WorkflowInterface $deliveryWorkflow,
         EntityManagerInterface $em
     ): JsonResponse {
         if (!$deliveryWorkflow->can($delivery, $transition)) {
@@ -111,6 +111,7 @@ class MoDeliveryController extends AbstractController
         return $this->json([
             'id' => $delivery->getId(),
             'status' => $delivery->getStatus(),
+            'plannedAt' => $delivery->getPlannedAt()?->format(DATE_ATOM),
         ]);
     }
 }

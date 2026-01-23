@@ -5,7 +5,7 @@
 import { onMounted, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
-import { fetchFoDeliveries } from '@/api/deliveriesApi'
+import { fetchFoDeliveries, applyFoDeliveryTransition } from '@/api/deliveriesApi'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -19,7 +19,7 @@ const handleLogout = () => {
   router.push({ name: 'login' })
 }
 
-onMounted(async () => {
+const refreshDeliveries = async () => {
   loading.value = true
   error.value = null
   try {
@@ -29,6 +29,25 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+}
+
+const transitionDelivery = async (deliveryId, transition) => {
+  error.value = null
+  try {
+    const updated = await applyFoDeliveryTransition(deliveryId, transition)
+    const idx = deliveries.value.findIndex((d) => d.id === deliveryId)
+    if (idx !== -1) {
+      deliveries.value[idx].status = updated.status
+    } else {
+      await refreshDeliveries()
+    }
+  } catch (e) {
+    error.value = e?.response?.data?.error ?? 'Erreur transition (FO)'
+  }
+}
+
+onMounted(async () => {
+  await refreshDeliveries()
 })
 </script>
 
@@ -61,6 +80,7 @@ onMounted(async () => {
           <th>Pickup</th>
           <th>Dropoff</th>
           <th>PlannedAt</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -71,9 +91,27 @@ onMounted(async () => {
           <td>{{ d.pickupAddress }}</td>
           <td>{{ d.dropoffAddress }}</td>
           <td>{{ d.plannedAt }}</td>
+          <td>
+            <button
+              v-if="d.status === 'planned'"
+              type="button"
+              @click="transitionDelivery(d.id, 'start')"
+            >
+              Démarrer
+            </button>
+
+            <button
+              v-if="d.status === 'in_transit'"
+              type="button"
+              style="margin-left: 8px;"
+              @click="transitionDelivery(d.id, 'deliver')"
+            >
+              Livrer
+            </button>
+          </td>
         </tr>
         <tr v-if="deliveries.length === 0">
-          <td colspan="6">Aucune livraison</td>
+          <td colspan="7">Aucune livraison</td>
         </tr>
       </tbody>
     </table>

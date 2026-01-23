@@ -5,10 +5,8 @@
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { fetchMoDeliveries } from '@/api/deliveriesApi'
+import { fetchMoDeliveries, createMoDelivery, applyMoDeliveryTransition } from '@/api/deliveriesApi'
 import { fetchOrganizations } from '@/api/organization'
-import { createMoDelivery } from '@/api/deliveriesApi'
 
 const auth = useAuthStore()
 const router = useRouter()
@@ -56,6 +54,21 @@ const createDelivery = async () => {
     console.error(err)
   } finally {
     submitting.value = false
+  }
+}
+
+const transitionDelivery = async (deliveryId, transition) => {
+  error.value = null
+  try {
+    const updated = await applyMoDeliveryTransition(deliveryId, transition)
+    const idx = deliveries.value.findIndex((d) => d.id === deliveryId)
+    if (idx !== -1) {
+      deliveries.value[idx].status = updated.status
+      deliveries.value[idx].plannedAt = updated.plannedAt
+    }
+  } catch (err) {
+    error.value = err.response?.data?.error || 'Erreur transition'
+    console.error(err)
   }
 }
 
@@ -145,6 +158,7 @@ onMounted(async () => {
           <th>PlannedAt</th>
           <th>Vendor</th>
           <th>Buyer</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -157,9 +171,27 @@ onMounted(async () => {
           <td>{{ d.plannedAt }}</td>
           <td>{{ d.vendor }}</td>
           <td>{{ d.buyer }}</td>
+          <td>
+            <button
+              v-if="d.status === 'draft'"
+              type="button"
+              @click="transitionDelivery(d.id, 'plan')"
+            >
+              Planifier
+            </button>
+
+            <button
+              v-if="d.status === 'draft' || d.status === 'planned'"
+              type="button"
+              style="margin-left: 8px;"
+              @click="transitionDelivery(d.id, 'cancel')"
+            >
+              Annuler
+            </button>
+          </td>
         </tr>
         <tr v-if="deliveries.length === 0">
-          <td colspan="8">Aucune livraison</td>
+          <td colspan="9">Aucune livraison</td>
         </tr>
       </tbody>
     </table>

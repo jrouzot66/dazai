@@ -14,3 +14,13 @@ export async function createMoDelivery(deliveryData) {
     const { data } = await axios.post('/api/mo/deliveries', deliveryData)
     return data
 }
+
+export async function applyMoDeliveryTransition(deliveryId, transition) {
+    const { data } = await axios.post(`/api/mo/deliveries/${deliveryId}/transitions/${transition}`)
+    return data
+}
+
+export async function applyFoDeliveryTransition(deliveryId, transition) {
+    const { data } = await axios.post(`/api/fo/deliveries/${deliveryId}/transitions/${transition}`)
+    return data
+}
