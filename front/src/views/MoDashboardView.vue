@@ -7,12 +7,18 @@ import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import { fetchMoDeliveries, createMoDelivery, applyMoDeliveryTransition } from '@/api/deliveriesApi'
 import { fetchOrganizations } from '@/api/organization'
+import { fetchMoWarehouses, createMoWarehouse } from '@/api/warehousesApi'
+import MoDeliveriesSection from '@/components/mo/MoDeliveriesSection.vue'
+import MoWarehousesSection from '@/components/mo/MoWarehousesSection.vue'
 
 const auth = useAuthStore()
 const router = useRouter()
 const loading = ref(true)
 const error = ref(null)
+
 const deliveries = ref([])
+const organizations = ref([])
+
 const showForm = ref(false)
 const submitting = ref(false)
 
@@ -23,7 +29,16 @@ const formData = ref({
   buyerId: '',
 })
 
-const organizations = ref([])
+const warehouses = ref([])
+const warehousesLoading = ref(false)
+const warehousesError = ref(null)
+const showWarehouseForm = ref(false)
+const submittingWarehouse = ref(false)
+
+const warehouseForm = ref({
+  name: '',
+  address: '',
+})
 
 const handleLogout = () => {
   auth.logout()
@@ -72,6 +87,44 @@ const transitionDelivery = async (deliveryId, transition) => {
   }
 }
 
+const refreshWarehouses = async () => {
+  warehousesLoading.value = true
+  warehousesError.value = null
+  try {
+    warehouses.value = await fetchMoWarehouses()
+  } catch (err) {
+    warehousesError.value = err.response?.data?.error || 'Impossible de charger les entrepôts'
+    console.error(err)
+  } finally {
+    warehousesLoading.value = false
+  }
+}
+
+const createWarehouse = async () => {
+  if (!warehouseForm.value.name || !warehouseForm.value.address) {
+    warehousesError.value = 'Tous les champs sont requis'
+    return
+  }
+
+  submittingWarehouse.value = true
+  warehousesError.value = null
+  try {
+    const created = await createMoWarehouse({
+      name: warehouseForm.value.name,
+      address: warehouseForm.value.address,
+    })
+
+    warehouses.value.unshift(created)
+    warehouseForm.value = { name: '', address: '' }
+    showWarehouseForm.value = false
+  } catch (err) {
+    warehousesError.value = err.response?.data?.error || 'Erreur lors de la création de l’entrepôt'
+    console.error(err)
+  } finally {
+    submittingWarehouse.value = false
+  }
+}
+
 onMounted(async () => {
   try {
     if (!auth.user) {
@@ -80,6 +133,7 @@ onMounted(async () => {
 
     deliveries.value = await fetchMoDeliveries()
     organizations.value = await fetchOrganizations()
+    await refreshWarehouses()
   } catch (err) {
     error.value = err.response?.data?.message || err.message
     console.error(err)
@@ -93,9 +147,7 @@ onMounted(async () => {
   <div class="dashboard">
     <div style="display: flex; justify-content: space-between; align-items: center;">
       <h1>Dashboard MO</h1>
-      <button type="button" @click="handleLogout">
-        Déconnexion
-      </button>
+      <button type="button" @click="handleLogout">Déconnexion</button>
     </div>
 
     <p>Utilisateur : {{ auth.user?.email }}</p>
@@ -104,96 +156,32 @@ onMounted(async () => {
 
     <hr />
 
-    <h2>Livraisons (MO)</h2>
+    <MoDeliveriesSection
+        :loading="loading"
+        :error="error"
+        :deliveries="deliveries"
+        :organizations="organizations"
+        :show-form="showForm"
+        :submitting="submitting"
+        :form-data="formData"
+        @update:showForm="showForm = $event"
+        @update:formData="formData = $event"
+        @create-delivery="createDelivery"
+        @transition-delivery="transitionDelivery"
+    />
 
-    <button type="button" @click="showForm = !showForm" style="margin-bottom: 16px;">
-      {{ showForm ? 'Annuler' : 'Créer une livraison' }}
-    </button>
+    <hr />
 
-    <div v-if="showForm" style="border: 1px solid #ccc; padding: 16px; margin-bottom: 16px;">
-      <h3>Nouvelle livraison</h3>
-      <div style="margin-bottom: 12px;">
-        <label>Adresse de pickup :</label>
-        <input v-model="formData.pickupAddress" type="text" style="width: 100%;" />
-      </div>
-      <div style="margin-bottom: 12px;">
-        <label>Adresse de dropoff :</label>
-        <input v-model="formData.dropoffAddress" type="text" style="width: 100%;" />
-      </div>
-      <div style="margin-bottom: 12px;">
-        <label>Vendor :</label>
-        <select v-model="formData.vendorId" style="width: 100%;">
-          <option value="">-- Sélectionner --</option>
-          <option v-for="org in organizations" :key="org.id" :value="org.id">
-            {{ org.name }}
-          </option>
-        </select>
-      </div>
-      <div style="margin-bottom: 12px;">
-        <label>Buyer :</label>
-        <select v-model="formData.buyerId" style="width: 100%;">
-          <option value="">-- Sélectionner --</option>
-          <option v-for="org in organizations" :key="org.id" :value="org.id">
-            {{ org.name }}
-          </option>
-        </select>
-      </div>
-      <button type="button" @click="createDelivery" :disabled="submitting">
-        {{ submitting ? 'Création...' : 'Créer' }}
-      </button>
-      <p v-if="error" style="color: red;">{{ error }}</p>
-    </div>
-
-    <p v-if="loading">Chargement...</p>
-    <p v-else-if="error && !showForm" style="color: red;">{{ error }}</p>
-
-    <table v-else border="1" cellpadding="6" cellspacing="0" style="width: 100%">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Référence</th>
-          <th>Statut</th>
-          <th>Pickup</th>
-          <th>Dropoff</th>
-          <th>PlannedAt</th>
-          <th>Vendor</th>
-          <th>Buyer</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="d in deliveries" :key="d.id">
-          <td>{{ d.id }}</td>
-          <td>{{ d.reference }}</td>
-          <td>{{ d.status }}</td>
-          <td>{{ d.pickupAddress }}</td>
-          <td>{{ d.dropoffAddress }}</td>
-          <td>{{ d.plannedAt }}</td>
-          <td>{{ d.vendor }}</td>
-          <td>{{ d.buyer }}</td>
-          <td>
-            <button
-              v-if="d.status === 'draft'"
-              type="button"
-              @click="transitionDelivery(d.id, 'plan')"
-            >
-              Planifier
-            </button>
-
-            <button
-              v-if="d.status === 'draft' || d.status === 'planned'"
-              type="button"
-              style="margin-left: 8px;"
-              @click="transitionDelivery(d.id, 'cancel')"
-            >
-              Annuler
-            </button>
-          </td>
-        </tr>
-        <tr v-if="deliveries.length === 0">
-          <td colspan="9">Aucune livraison</td>
-        </tr>
-      </tbody>
-    </table>
+    <MoWarehousesSection
+        :loading="warehousesLoading"
+        :error="warehousesError"
+        :warehouses="warehouses"
+        :show-form="showWarehouseForm"
+        :submitting="submittingWarehouse"
+        :form-data="warehouseForm"
+        @update:showForm="showWarehouseForm = $event"
+        @update:formData="warehouseForm = $event"
+        @create-warehouse="createWarehouse"
+    />
   </div>
 </template>
