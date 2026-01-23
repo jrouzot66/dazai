@@ -22,6 +22,10 @@ class PortalController extends AbstractController
     {
         $tenant = $tenantContext->getCurrentTenant();
 
+        if ($tenant === null) {
+            throw $this->createNotFoundException('Tenant introuvable pour ce domaine.');
+        }
+
         return $this->render('tenant/app_boot.html.twig', [
             'tenant' => $tenant,
             'config' => $tenant->getConfig()
@@ -39,10 +43,24 @@ class PortalController extends AbstractController
             return new JsonResponse(['authenticated' => false], 401);
         }
 
+        $roles = $user->getRoles();
+
+        $isMo = in_array('ROLE_MO_MANAGER', $roles, true);
+        $isFo = in_array('ROLE_FO_VENDOR', $roles, true) || in_array('ROLE_FO_BUYER', $roles, true);
+
+        // Priorité MO si les deux
+        $portal = 'unknown';
+        if ($isMo) {
+            $portal = 'mo';
+        } elseif ($isFo) {
+            $portal = 'fo';
+        }
+
         return new JsonResponse([
             'authenticated' => true,
             'email' => $user->getUserIdentifier(),
-            'roles' => $user->getRoles(),
+            'roles' => $roles,
+            'portal' => $portal,
         ]);
     }
 

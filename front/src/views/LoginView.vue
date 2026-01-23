@@ -12,12 +12,11 @@ const router = useRouter()
 const handleLogin = async () => {
   try {
     await auth.login(email.value, password.value)
-    router.push({ name: 'dashboard' })
+    router.push({ name: 'home' })
   } catch (e) {
     error.value = "Identifiants invalides"
   }
 }
-console.log('on rentre ici')
 </script>
 
 <template>

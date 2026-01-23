@@ -32,6 +32,7 @@ security:
             logout:
                 path: admin_logout
                 target: admin_login
+            access_denied_handler: null
 
         tenant_portal:
             pattern: ^/api
@@ -54,6 +55,7 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
+        - { path: ^/admin/login$, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_SUPER_ADMIN }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/logged, roles: ROLE_USER }

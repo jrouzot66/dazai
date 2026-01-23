@@ -1,0 +1,29 @@
+framework:
+  workflows:
+    delivery:
+      type: 'state_machine'
+      marking_store:
+        type: 'method'
+        property: 'status'
+      supports:
+        - App\Entity\Delivery
+      initial_marking: draft
+      places:
+        - draft
+        - planned
+        - in_transit
+        - delivered
+        - cancelled
+      transitions:
+        plan:
+          from: draft
+          to: planned
+        start:
+          from: planned
+          to: in_transit
+        deliver:
+          from: in_transit
+          to: delivered
+        cancel:
+          from: [draft, planned]
+          to: cancelled
