@@ -6,6 +6,7 @@
 
 namespace App\Controller\Tenant;
 
+use App\Provider\MultiTenant\TenantConfigProvider;
 use App\Service\MultiTenant\TenantContextInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -18,7 +19,7 @@ class PortalController extends AbstractController
      * Cette route capture la racine ET toutes les routes qui ne commencent pas par /api ou /admin
      */
     #[Route('/{vueRouting}', name: 'app_entrypoint', requirements: ['vueRouting' => '^(?!api|admin).*'], defaults: ['vueRouting' => null])]
-    public function boot(TenantContextInterface $tenantContext): Response
+    public function boot(TenantContextInterface $tenantContext, TenantConfigProvider $tenantConfig): Response
     {
         $tenant = $tenantContext->getCurrentTenant();
 
@@ -28,7 +29,7 @@ class PortalController extends AbstractController
 
         return $this->render('tenant/app_boot.html.twig', [
             'tenant' => $tenant,
-            'config' => $tenant->getConfig()
+            'config' => $tenantConfig->getConfig($tenant)
         ]);
     }
 
