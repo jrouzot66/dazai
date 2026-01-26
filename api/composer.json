@@ -66,7 +66,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "App\\Tests\\": "tests/",
+            "App\\Behat\\": "behat/context/"
         }
     },
     "replace": {
@@ -103,6 +104,10 @@
         }
     },
     "require-dev": {
+        "behat/behat": "^3.29",
+        "behat/mink-browserkit-driver": "^2.3",
+        "friends-of-behat/mink-extension": "^2.7",
+        "friends-of-behat/symfony-extension": "^2.6",
         "phpunit/phpunit": "^12.5",
         "symfony/browser-kit": "7.2.*",
         "symfony/css-selector": "7.2.*",

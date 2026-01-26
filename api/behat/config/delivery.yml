@@ -1,0 +1,18 @@
+default:
+  extensions:
+    FriendsOfBehat\SymfonyExtension:
+      kernel:
+        class: App\Kernel
+        environment: test
+        debug: false
+
+  suites:
+    delivery:
+      paths:
+        - "%paths.base%/behat/features/delivery"
+      contexts:
+        - App\Behat\Common\TenantContext
+        - App\Behat\Common\JwtStorageContext
+        - App\Behat\Common\HttpApiContext
+        - App\Behat\Common\AuthJwtContext
+        - App\Behat\Delivery\DeliveryWorkflowContext
