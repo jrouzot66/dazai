@@ -10,12 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity(repositoryClass: DeliveryRepository::class)]
-#[ORM\Table(
-    name: 'delivery',
-    uniqueConstraints: [
-        new ORM\UniqueConstraint(name: 'uniq_delivery_tenant_reference', columns: ['white_label_id', 'reference'])
-    ]
-)]
+#[ORM\Table(name: 'delivery')]
+#[ORM\UniqueConstraint(name: 'uniq_delivery_tenant_reference', columns: ['white_label_id', 'reference'])]
 class Delivery implements TenantAwareInterface
 {
     use TenantAwareTrait;
@@ -58,6 +54,12 @@ class Delivery implements TenantAwareInterface
 
     #[ORM\Column]
     private \DateTimeImmutable $updatedAt;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $etaAt = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?float $distanceKm = null;
 
     public function __construct()
     {
@@ -113,6 +115,12 @@ class Delivery implements TenantAwareInterface
 
     public function getBuyer(): ?Organization { return $this->buyer; }
     public function setBuyer(Organization $buyer): self { $this->buyer = $buyer; return $this; }
+
+    public function getEtaAt(): ?\DateTimeImmutable { return $this->etaAt; }
+    public function setEtaAt(?\DateTimeImmutable $etaAt): self { $this->etaAt = $etaAt; return $this; }
+
+    public function getDistanceKm(): ?float { return $this->distanceKm; }
+    public function setDistanceKm(?float $distanceKm): self { $this->distanceKm = $distanceKm; return $this; }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
     public function getUpdatedAt(): \DateTimeImmutable { return $this->updatedAt; }

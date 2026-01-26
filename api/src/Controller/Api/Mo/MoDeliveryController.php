@@ -32,6 +32,8 @@ class MoDeliveryController extends AbstractController
                 'pickupAddress' => $d->getPickupAddress(),
                 'dropoffAddress' => $d->getDropoffAddress(),
                 'plannedAt' => $d->getPlannedAt()?->format(DATE_ATOM),
+                'etaAt' => $d->getEtaAt()?->format(DATE_ATOM),
+                'distanceKm' => $d->getDistanceKm(),
                 'vendor' => $d->getVendor()?->getName(),
                 'buyer' => $d->getBuyer()?->getName(),
             ];

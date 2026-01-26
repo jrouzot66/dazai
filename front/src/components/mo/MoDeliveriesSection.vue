@@ -107,6 +107,8 @@ const setFormField = (key, value) => {
         <th>Pickup</th>
         <th>Dropoff</th>
         <th>PlannedAt</th>
+        <th>ETA</th>
+        <th>Distance (km)</th>
         <th>Vendor</th>
         <th>Buyer</th>
         <th>Actions</th>
@@ -121,6 +123,8 @@ const setFormField = (key, value) => {
         <td>{{ d.pickupAddress }}</td>
         <td>{{ d.dropoffAddress }}</td>
         <td>{{ d.plannedAt }}</td>
+        <td>{{ d.etaAt }}</td>
+        <td>{{ d.distanceKm }}</td>
         <td>{{ d.vendor }}</td>
         <td>{{ d.buyer }}</td>
         <td>

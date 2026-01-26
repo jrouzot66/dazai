@@ -80,6 +80,8 @@ onMounted(async () => {
           <th>Pickup</th>
           <th>Dropoff</th>
           <th>PlannedAt</th>
+          <th>ETA</th>
+          <th>Distance (km)</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -91,6 +93,8 @@ onMounted(async () => {
           <td>{{ d.pickupAddress }}</td>
           <td>{{ d.dropoffAddress }}</td>
           <td>{{ d.plannedAt }}</td>
+          <td>{{ d.etaAt }}</td>
+          <td>{{ d.distanceKm }}</td>
           <td>
             <button
               v-if="d.status === 'planned'"
@@ -111,7 +115,7 @@ onMounted(async () => {
           </td>
         </tr>
         <tr v-if="deliveries.length === 0">
-          <td colspan="7">Aucune livraison</td>
+          <td colspan="9">Aucune livraison</td>
         </tr>
       </tbody>
     </table>
