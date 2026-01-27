@@ -3,6 +3,7 @@
 namespace App\Behat\Common;
 
 use Behat\Behat\Context\Context;
+use PHPUnit\Framework\Assert;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 class HttpApiContext implements Context
@@ -40,33 +41,29 @@ class HttpApiContext implements Context
      */
     public function theResponseStatusShouldBe(int $code): void
     {
-        if (!$this->response) {
-            throw new \RuntimeException('No response available.');
-        }
+        Assert::assertNotNull($this->response, 'No response available.');
 
         $actual = $this->response->getStatusCode();
-        if ($actual !== $code) {
-            throw new \RuntimeException(sprintf(
+        Assert::assertSame(
+            $code,
+            $actual,
+            sprintf(
                 'Expected status %d, got %d. Body: %s',
                 $code,
                 $actual,
                 (string) $this->response->getContent()
-            ));
-        }
+            )
+        );
     }
 
     public function getJson(): array
     {
-        if (!$this->response) {
-            throw new \RuntimeException('No response available.');
-        }
+        Assert::assertNotNull($this->response, 'No response available.');
 
         $content = (string) $this->response->getContent();
         $data = json_decode($content, true);
 
-        if (!is_array($data)) {
-            throw new \RuntimeException('Response is not JSON: ' . $content);
-        }
+        Assert::assertIsArray($data, 'Response is not JSON: ' . $content);
 
         return $data;
     }

@@ -10,9 +10,9 @@ default:
         debug: false
 
   suites:
-    delivery:
+    warehouse:
       paths:
-        - behat/features/delivery
+        - behat/features/warehouse
       contexts:
         - App\Behat\Common\DatabaseContext
         - App\Behat\Common\TenantContext
@@ -20,4 +20,4 @@ default:
         - App\Behat\Common\HttpApiContext
         - App\Behat\Common\SeedContext
         - App\Behat\Common\AuthJwtContext
-        - App\Behat\Delivery\DeliveryWorkflowContext
+        - App\Behat\Warehouse\WarehouseWorkflowContext

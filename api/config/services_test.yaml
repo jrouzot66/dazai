@@ -26,5 +26,11 @@ services:
     App\Behat\Common\AuthJwtContext:
         tags: [ { name: context.service } ]
 
+    App\Behat\Common\SeedContext:
+        tags: [ { name: context.service } ]
+
     App\Behat\Delivery\DeliveryWorkflowContext:
+        tags: [ { name: context.service } ]
+
+    App\Behat\Warehouse\WarehouseWorkflowContext:
         tags: [ { name: context.service } ]
