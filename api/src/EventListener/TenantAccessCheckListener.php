@@ -27,7 +27,9 @@ class TenantAccessCheckListener
         // C'est ici que la magie opère :
         // Si l'utilisateur appartient à la WhiteLabel ID 1 mais tente
         // de se loguer sur le domaine lié à l'ID 2, on le jette.
-        if ($user->getWhiteLabel() !== $currentTenant) {
+        $userTenantId = $user->getWhiteLabel()?->getId();
+        $currentTenantId = $currentTenant->getId();
+        if ($userTenantId !== $currentTenantId) {
             throw new CustomUserMessageAuthenticationException(
                 "Accès refusé : votre compte n'appartient pas à cette instance Fluxion."
             );
