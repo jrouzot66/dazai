@@ -13,7 +13,7 @@
     </script>
 
     {% if app.debug %}
-        {% set vite_base = config.vite_url ?? vite_dev_url ?? 'http://localhost:5173' %}
+        {% set vite_base = 'http://localhost:5173' %}
         <script type="module" src="{{ vite_base }}/@vite/client"></script>
         <script type="module" src="{{ vite_base }}/src/main.js"></script>
     {% else %}

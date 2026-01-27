@@ -2,13 +2,13 @@
 
 namespace App\Behat\Delivery;
 
-use App\Entity\AppUser;
-use App\Entity\Organization;
-use App\Entity\WhiteLabel;
-use App\Behat\Common\AuthJwtContext;
 use App\Behat\Common\HttpApiContext;
 use App\Behat\Common\JwtStorageContext;
 use App\Behat\Common\TenantContext;
+use App\Entity\AppUser;
+use App\Entity\Organization;
+use App\Entity\WhiteLabel;
+use App\Entity\Enum\OrganizationType;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
@@ -59,11 +59,13 @@ class DeliveryWorkflowContext implements Context
         $vendor = new Organization();
         $vendor->setName('Vendor Org');
         $vendor->setWhiteLabel($tenant);
+        $vendor->setType(OrganizationType::VENDOR); // <-- adapte au nom exact de ton enum
         $this->em->persist($vendor);
 
         $buyer = new Organization();
         $buyer->setName('Buyer Org');
         $buyer->setWhiteLabel($tenant);
+        $buyer->setType(OrganizationType::BUYER); // <-- adapte au nom exact de ton enum
         $this->em->persist($buyer);
 
         $mo = new AppUser();

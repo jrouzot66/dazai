@@ -1,16 +1,20 @@
 default:
+  autoload:
+    - "%paths.base%/bootstrap.php"
+
   extensions:
     FriendsOfBehat\SymfonyExtension:
       kernel:
         class: App\Kernel
         environment: test
-        debug: false
+        debug: true
 
   suites:
     delivery:
       paths:
-        - "%paths.base%/behat/features/delivery"
+        - behat/features/delivery
       contexts:
+        - App\Behat\Common\DatabaseContext
         - App\Behat\Common\TenantContext
         - App\Behat\Common\JwtStorageContext
         - App\Behat\Common\HttpApiContext

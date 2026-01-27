@@ -13,7 +13,9 @@ class HttpApiContext implements Context
         private readonly KernelBrowser $client,
         private readonly TenantContext $tenantContext,
         private readonly JwtStorageContext $jwtStorage,
-    ) {}
+    ) {
+        $this->client->disableReboot();
+    }
 
     public function request(string $method, string $path, ?array $jsonBody): void
     {

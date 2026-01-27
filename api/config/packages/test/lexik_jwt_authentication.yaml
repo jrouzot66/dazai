@@ -1,0 +1,9 @@
+lexik_jwt_authentication:
+  secret_key: '%kernel.project_dir%/config/jwt/test/private.pem'
+  public_key: '%kernel.project_dir%/config/jwt/test/public.pem'
+  pass_phrase: 'testenv'
+  token_extractors:
+    authorization_header:
+      enabled: true
+      prefix: Bearer
+      name: Authorization
