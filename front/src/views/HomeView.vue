@@ -22,11 +22,22 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
-    <h1>Accueil</h1>
-    <p v-if="auth.user?.portal === 'unknown'">
-      Votre compte n’a pas de profil MO/FO valide. Contactez un administrateur.
-    </p>
-    <p v-else>Redirection en cours…</p>
+  <div class="page">
+    <div class="card">
+      <div class="card__body">
+        <h1 class="h2">Accueil</h1>
+
+        <p v-if="auth.user?.portal === 'unknown'" class="home__warning">
+          Votre compte n’a pas de profil MO/FO valide. Contactez un administrateur.
+        </p>
+        <p v-else class="muted">Redirection en cours…</p>
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.home__warning {
+  color: #ffcf9d;
+}
+</style>

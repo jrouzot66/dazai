@@ -3,5 +3,5 @@
 </template>
 
 <style>
-body { font-family: sans-serif; margin: 0; padding: 20px; }
+/* Styles globaux déplacés dans src/styles/main.scss */
 </style>

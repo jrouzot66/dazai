@@ -144,44 +144,83 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="dashboard">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h1>Dashboard MO</h1>
-      <button type="button" @click="handleLogout">Déconnexion</button>
+  <div class="page">
+    <div class="card">
+      <div class="card__body">
+        <div class="dash__top">
+          <h1 class="h2">Dashboard MO</h1>
+          <button class="btn" type="button" @click="handleLogout">Déconnexion</button>
+        </div>
+
+        <div class="dash__meta">
+          <div class="dash__metaItem"><span class="muted">Utilisateur</span><span>{{ auth.user?.email }}</span></div>
+          <div class="dash__metaItem"><span class="muted">Instance</span><span>{{ auth.tenant }}</span></div>
+          <div class="dash__metaItem"><span class="muted">Rôles</span><span>{{ auth.user?.roles?.join(', ') }}</span></div>
+        </div>
+      </div>
     </div>
 
-    <p>Utilisateur : {{ auth.user?.email }}</p>
-    <p>Instance : {{ auth.tenant }}</p>
-    <p>Vos rôles : {{ auth.user?.roles?.join(', ') }}</p>
+    <div class="dash__sections">
+      <MoDeliveriesSection
+          :loading="loading"
+          :error="error"
+          :deliveries="deliveries"
+          :organizations="organizations"
+          :show-form="showForm"
+          :submitting="submitting"
+          :form-data="formData"
+          @update:showForm="showForm = $event"
+          @update:formData="formData = $event"
+          @create-delivery="createDelivery"
+          @transition-delivery="transitionDelivery"
+      />
 
-    <hr />
-
-    <MoDeliveriesSection
-        :loading="loading"
-        :error="error"
-        :deliveries="deliveries"
-        :organizations="organizations"
-        :show-form="showForm"
-        :submitting="submitting"
-        :form-data="formData"
-        @update:showForm="showForm = $event"
-        @update:formData="formData = $event"
-        @create-delivery="createDelivery"
-        @transition-delivery="transitionDelivery"
-    />
-
-    <hr />
-
-    <MoWarehousesSection
-        :loading="warehousesLoading"
-        :error="warehousesError"
-        :warehouses="warehouses"
-        :show-form="showWarehouseForm"
-        :submitting="submittingWarehouse"
-        :form-data="warehouseForm"
-        @update:showForm="showWarehouseForm = $event"
-        @update:formData="warehouseForm = $event"
-        @create-warehouse="createWarehouse"
-    />
+      <MoWarehousesSection
+          :loading="warehousesLoading"
+          :error="warehousesError"
+          :warehouses="warehouses"
+          :show-form="showWarehouseForm"
+          :submitting="submittingWarehouse"
+          :form-data="warehouseForm"
+          @update:showForm="showWarehouseForm = $event"
+          @update:formData="warehouseForm = $event"
+          @create-warehouse="createWarehouse"
+      />
+    </div>
   </div>
 </template>
+
+<style scoped lang="scss">
+.dash__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.dash__meta {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+
+  @media (max-width: 900px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dash__metaItem {
+  display: grid;
+  gap: 4px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.dash__sections {
+  margin-top: 16px;
+  display: grid;
+  gap: 16px;
+}
+</style>
