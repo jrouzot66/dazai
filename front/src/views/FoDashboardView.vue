@@ -2,13 +2,17 @@
 /**
  * @Developer Rouzot Julien copyright 2026 Agence Webnet.fr
  */
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useWhiteLabelStore } from '@/stores/whiteLabel'
 import { useRouter } from 'vue-router'
 import { fetchFoDeliveries, applyFoDeliveryTransition } from '@/api/deliveriesApi'
 
 const auth = useAuthStore()
+const whiteLabel = useWhiteLabelStore()
 const router = useRouter()
+
+const brandSuffix = computed(() => (whiteLabel.displayName ? ` — ${whiteLabel.displayName}` : ''))
 
 const deliveries = ref([])
 const loading = ref(false)
@@ -64,7 +68,7 @@ onMounted(async () => {
     <div class="card">
       <div class="card__body">
         <div class="dash__top">
-          <h1 class="h2">Dashboard FO</h1>
+          <h1 class="h2">Dashboard FO{{ brandSuffix }}</h1>
           <button class="btn" type="button" @click="handleLogout">Déconnexion</button>
         </div>
 
@@ -86,52 +90,52 @@ onMounted(async () => {
         <div v-else class="fo__tableWrap">
           <table class="table">
             <thead>
-            <tr>
-              <th>ID</th>
-              <th>Référence</th>
-              <th>Statut</th>
-              <th>Pickup</th>
-              <th>Dropoff</th>
-              <th>PlannedAt</th>
-              <th>ETA</th>
-              <th>Distance (km)</th>
-              <th>Actions</th>
-            </tr>
+              <tr>
+                <th>ID</th>
+                <th>Référence</th>
+                <th>Statut</th>
+                <th>Pickup</th>
+                <th>Dropoff</th>
+                <th>PlannedAt</th>
+                <th>ETA</th>
+                <th>Distance (km)</th>
+                <th>Actions</th>
+              </tr>
             </thead>
             <tbody>
-            <tr v-for="d in deliveries" :key="d.id">
-              <td>{{ d.id }}</td>
-              <td>{{ d.reference }}</td>
-              <td><span :class="badgeClassForStatus(d.status)">{{ d.status }}</span></td>
-              <td>{{ d.pickupAddress }}</td>
-              <td>{{ d.dropoffAddress }}</td>
-              <td>{{ d.plannedAt }}</td>
-              <td>{{ d.etaAt }}</td>
-              <td>{{ d.distanceKm }}</td>
-              <td class="fo__rowActions">
-                <button
+              <tr v-for="d in deliveries" :key="d.id">
+                <td>{{ d.id }}</td>
+                <td>{{ d.reference }}</td>
+                <td><span :class="badgeClassForStatus(d.status)">{{ d.status }}</span></td>
+                <td>{{ d.pickupAddress }}</td>
+                <td>{{ d.dropoffAddress }}</td>
+                <td>{{ d.plannedAt }}</td>
+                <td>{{ d.etaAt }}</td>
+                <td>{{ d.distanceKm }}</td>
+                <td class="fo__rowActions">
+                  <button
                     v-if="d.status === 'planned'"
                     class="btn"
                     type="button"
                     @click="transitionDelivery(d.id, 'start')"
-                >
-                  Démarrer
-                </button>
+                  >
+                    Démarrer
+                  </button>
 
-                <button
+                  <button
                     v-if="d.status === 'in_transit'"
                     class="btn btn--primary"
                     type="button"
                     @click="transitionDelivery(d.id, 'deliver')"
-                >
-                  Livrer
-                </button>
-              </td>
-            </tr>
+                  >
+                    Livrer
+                  </button>
+                </td>
+              </tr>
 
-            <tr v-if="deliveries.length === 0">
-              <td colspan="9" class="muted">Aucune livraison</td>
-            </tr>
+              <tr v-if="deliveries.length === 0">
+                <td colspan="9" class="muted">Aucune livraison</td>
+              </tr>
             </tbody>
           </table>
         </div>

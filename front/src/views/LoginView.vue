@@ -1,13 +1,18 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import { useWhiteLabelStore } from '@/stores/whiteLabel'
 import { useRouter } from 'vue-router'
 
 const email = ref('')
 const password = ref('')
 const error = ref(null)
 const auth = useAuthStore()
+const whiteLabel = useWhiteLabelStore()
 const router = useRouter()
+
+const brandSuffix = computed(() => (whiteLabel.displayName ? ` — ${whiteLabel.displayName}` : ''))
+const logoUrl = computed(() => whiteLabel.logoUrl)
 
 const handleLogin = async () => {
   try {
@@ -23,7 +28,16 @@ const handleLogin = async () => {
   <div class="page login">
     <div class="card login__card">
       <div class="card__body">
-        <h1 class="h2">Connexion <span class="muted">{{ auth.tenant }}</span></h1>
+        <div class="login__titleRow">
+          <img
+            v-if="logoUrl"
+            class="login__logo"
+            :src="logoUrl"
+            alt="Logo"
+          />
+          <h1 class="h2">Connexion <span class="muted">{{ brandSuffix }}</span></h1>
+        </div>
+
         <p class="muted login__subtitle">Connecte-toi pour accéder à ton dashboard.</p>
 
         <form class="login__form" @submit.prevent="handleLogin">
@@ -55,6 +69,24 @@ const handleLogin = async () => {
 
   .login__card {
     width: min(520px, 100%);
+  }
+
+  .login__titleRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .login__logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    object-fit: contain;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    padding: 4px;
+    flex: 0 0 auto;
   }
 
   .login__subtitle {

@@ -10,7 +10,8 @@ export const useAuthStore = defineStore('auth', {
     token: localStorage.getItem('jwt_token'),
     isAuthenticated: !!localStorage.getItem('jwt_token'),
     isLoaded: false,
-    axiosInstance: axios // On gardera une référence à Axios
+    axiosInstance: axios, // On gardera une référence à Axios
+    tenant: (window.FLUXION_CONTEXT && window.FLUXION_CONTEXT.tenantName) ? window.FLUXION_CONTEXT.tenantName : null,
   }),
 
   actions: {

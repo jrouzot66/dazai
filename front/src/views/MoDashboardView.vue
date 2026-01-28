@@ -3,8 +3,9 @@
  * @Developer Rouzot Julien copyright 2026 Agence Webnet.fr
  */
 import { useAuthStore } from '@/stores/auth'
+import { useWhiteLabelStore } from '@/stores/whiteLabel'
 import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { fetchMoDeliveries, createMoDelivery, applyMoDeliveryTransition } from '@/api/deliveriesApi'
 import { fetchOrganizations } from '@/api/organization'
 import { fetchMoWarehouses, createMoWarehouse } from '@/api/warehousesApi'
@@ -12,9 +13,12 @@ import MoDeliveriesSection from '@/components/mo/MoDeliveriesSection.vue'
 import MoWarehousesSection from '@/components/mo/MoWarehousesSection.vue'
 
 const auth = useAuthStore()
+const whiteLabel = useWhiteLabelStore()
 const router = useRouter()
 const loading = ref(true)
 const error = ref(null)
+
+const brandSuffix = computed(() => (whiteLabel.displayName ? ` — ${whiteLabel.displayName}` : ''))
 
 const deliveries = ref([])
 const organizations = ref([])
@@ -148,7 +152,7 @@ onMounted(async () => {
     <div class="card">
       <div class="card__body">
         <div class="dash__top">
-          <h1 class="h2">Dashboard MO</h1>
+          <h1 class="h2">Dashboard MO{{ brandSuffix }}</h1>
           <button class="btn" type="button" @click="handleLogout">Déconnexion</button>
         </div>
 
@@ -162,29 +166,29 @@ onMounted(async () => {
 
     <div class="dash__sections">
       <MoDeliveriesSection
-          :loading="loading"
-          :error="error"
-          :deliveries="deliveries"
-          :organizations="organizations"
-          :show-form="showForm"
-          :submitting="submitting"
-          :form-data="formData"
-          @update:showForm="showForm = $event"
-          @update:formData="formData = $event"
-          @create-delivery="createDelivery"
-          @transition-delivery="transitionDelivery"
+        :loading="loading"
+        :error="error"
+        :deliveries="deliveries"
+        :organizations="organizations"
+        :show-form="showForm"
+        :submitting="submitting"
+        :form-data="formData"
+        @update:showForm="showForm = $event"
+        @update:formData="formData = $event"
+        @create-delivery="createDelivery"
+        @transition-delivery="transitionDelivery"
       />
 
       <MoWarehousesSection
-          :loading="warehousesLoading"
-          :error="warehousesError"
-          :warehouses="warehouses"
-          :show-form="showWarehouseForm"
-          :submitting="submittingWarehouse"
-          :form-data="warehouseForm"
-          @update:showForm="showWarehouseForm = $event"
-          @update:formData="warehouseForm = $event"
-          @create-warehouse="createWarehouse"
+        :loading="warehousesLoading"
+        :error="warehousesError"
+        :warehouses="warehouses"
+        :show-form="showWarehouseForm"
+        :submitting="submittingWarehouse"
+        :form-data="warehouseForm"
+        @update:showForm="showWarehouseForm = $event"
+        @update:formData="warehouseForm = $event"
+        @create-warehouse="createWarehouse"
       />
     </div>
   </div>
